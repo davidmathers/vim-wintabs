@@ -6,6 +6,46 @@ function! wintabs#ui#get_tabline()
   return line.'%='.spaceline
 endfunction
 
+" generate buffer strings for status string
+function! wintabs#ui#set_bufstrings(window)
+  call wintabs#refresh_buflist(a:window)
+
+  let left_hidden = ''
+  let active = ''
+  let right_hidden = ''
+
+  for buffer in wintabs#getwinvar(a:window, 'wintabs_buflist', [])
+    " get buffer name and normalize
+    let name = fnamemodify(bufname(buffer), ':t')
+    let name = substitute(name, '%', '%%', 'g')
+    if name == ''
+      let name = '[No Name]'
+    endif
+
+    " add symbols
+    if getbufvar(buffer, '&readonly')
+      let name = name.g:wintabs_ui_readonly
+    elseif getbufvar(buffer, '&modified')
+      let name = name.g:wintabs_ui_modified
+    endif
+
+    " build strings
+    if buffer == winbufnr(a:window)
+      let active = name
+    else
+      if active == ''
+        let left_hidden = left_hidden.' '.name
+      else
+        let right_hidden = right_hidden.' '.name
+      endif
+    endif
+  endfor
+
+  let g:bufstrings.left_hidden = left_hidden
+  let g:bufstrings.active = active
+  let g:bufstrings.right_hidden = right_hidden
+endfunction
+
 " set statusline window by window
 function! wintabs#ui#set_statusline()
   for window in range(1, winnr('$'))

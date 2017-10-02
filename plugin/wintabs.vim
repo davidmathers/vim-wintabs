@@ -78,11 +78,35 @@ call s:set('g:wintabs_ui_active_vimtab_right', ' ')
 
 if g:wintabs_display == 'tabline'
   call s:set('g:wintabs_ui_active_higroup', 'TabLineSel')
+  call s:set('g:wintabs_ui_hidden_higroup', 'TabLine')
 endif
 
 if g:wintabs_display == 'statusline'
   call s:set('g:wintabs_ui_active_higroup', 'Normal')
+  call s:set('g:wintabs_ui_hidden_higroup', 'Comment')
 endif
+
+
+let g:bufstrings = {
+      \ 'left_hidden': '',
+      \ 'active': '',
+      \ 'right_hidden': '',
+      \ }
+
+function! wintabs#refresh_bufstrings()
+  call wintabs#ui#set_bufstrings(0)
+  return ''
+endfunction
+
+function! wintabs#get_status_string()
+  return
+        \ '%#'.g:wintabs_ui_hidden_higroup.'#'
+        \.'%{g:bufstrings.left_hidden} '
+        \.'%#'.g:wintabs_ui_active_higroup.'#'
+        \.'%{g:bufstrings.active} '
+        \.'%#'.g:wintabs_ui_hidden_higroup.'#'
+        \.'%{g:bufstrings.right_hidden}'
+endfunction
 
 " private
 call s:set('g:wintabs_ui_arrow_left', ' < ')
